@@ -1,26 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { ListContainer } from './Components/list-container/list-container.component';
+
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      courses: [],
+    };
+  }
+
+  componentDidMount() {
+    fetch(
+      'https://catalogapi.manuelc.me/?url=http://csudh.smartcatalogiq.com/en/2020-2021/Catalog/Copy-of-Computer-Science/Bachelor-of-Science-in-Computer-Science'
+    )
+      .then(res => res.json())
+      //.then(courses => console.log(courses));
+      .then(json => this.setState({ courses: json.courses }));
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>Catelog</h1>
+        <ListContainer courses={this.state.courses} />
+      </div>
+    );
+  }
 }
 
 export default App;
