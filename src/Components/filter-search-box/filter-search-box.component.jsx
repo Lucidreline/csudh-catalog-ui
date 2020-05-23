@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const SearchBox = props => (
+export const FilterSearchBox = props => (
   <div className="search-box">
     <input
       type="search"

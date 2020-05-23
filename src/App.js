@@ -2,7 +2,8 @@ import React from 'react';
 
 import './App.css';
 
-import { SearchBox } from './Components/search-box/search-box.component';
+import { FetchSearchBox } from './Components/fetch-search-box/fetch-search-box.component';
+import { FilterSearchBox } from './Components/filter-search-box/filter-search-box.component';
 import { ListContainer } from './Components/list-container/list-container.component';
 
 class App extends React.Component {
@@ -10,21 +11,33 @@ class App extends React.Component {
     super();
     this.state = {
       courses: [],
+      successfulFetch: false,
+      searchedYet: false,
       courseSearchField: '',
     };
   }
 
-  componentDidMount() {
-    fetch(
-      'https://catalogapi.manuelc.me/?url=http://csudh.smartcatalogiq.com/en/2020-2021/Catalog/Copy-of-Computer-Science/Bachelor-of-Science-in-Computer-Science'
-    )
-      .then(res => res.json())
-      //.then(courses => console.log(courses));
-      .then(json => this.setState({ courses: json.courses }));
-  }
-
   handleSearchChange = e => {
     this.setState({ courseSearchField: e.target.value });
+  };
+
+  handleCatalogLookup = e => {
+    const url = e.target.querySelector('input').value;
+    fetch(`https://catalogapi.manuelc.me/?url=${url}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
+          this.setState({
+            successfulFetch: true,
+            courses: json.courses,
+            searchedYet: true,
+          });
+        } else {
+          this.setState({ successfulFetch: false, searchedYet: true });
+        }
+      });
+
+    e.preventDefault(); // stops the page from refreshing when the form is submitted
   };
 
   filtererCourses = course => {
@@ -39,16 +52,32 @@ class App extends React.Component {
     if (nameMatch || numberMatch) return true;
   };
 
+  decideCoursesSection = () => {
+    if (!this.state.searchedYet) {
+      return <h1>Enter the catalog's URL in the top search box</h1>;
+    } else if (this.state.successfulFetch) {
+      const filteredCourses = this.state.courses.filter(this.filtererCourses);
+      return <ListContainer courses={filteredCourses} />;
+    } else {
+      return <h1>Please enter a valid catalog URL</h1>;
+    }
+  };
+
   render() {
-    const filteredCourses = this.state.courses.filter(this.filtererCourses);
+    const coursesSection = this.decideCoursesSection();
+
     return (
       <div className="App">
-        <h1>Catelog</h1>
-        <SearchBox
+        <h1>Catalog</h1>
+        <FetchSearchBox
+          placeholder="Catalog URL"
+          handleSubmit={this.handleCatalogLookup}
+        />
+        <FilterSearchBox
           placeholder="Look for a course"
           handleChange={this.handleSearchChange}
         />
-        <ListContainer courses={filteredCourses} />
+        {coursesSection}
       </div>
     );
   }
