@@ -1,0 +1,9 @@
+.fetch-search {
+  display: flex;
+  justify-content: center;
+}
+
+.fetch-search button {
+  height: 100%;
+  margin: 0 0.75rem;
+}

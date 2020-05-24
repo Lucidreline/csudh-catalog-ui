@@ -68,15 +68,18 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        <h1>Catalog</h1>
+        <h1 id="title">CSUDH Catalog</h1>
         <FetchSearchBox
           placeholder="Catalog URL"
           handleSubmit={this.handleCatalogLookup}
         />
-        <FilterSearchBox
-          placeholder="Look for a course"
-          handleChange={this.handleSearchChange}
-        />
+        <div className="courses-header">
+          <h2>Courses</h2>
+          <FilterSearchBox
+            placeholder="Look for a course"
+            handleChange={this.handleSearchChange}
+          />
+        </div>
         {coursesSection}
       </div>
     );
